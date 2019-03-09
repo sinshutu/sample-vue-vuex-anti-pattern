@@ -1,33 +1,34 @@
-const fs = require('fs')
-const path = require('path')
-const webpack = require('webpack')
-const VueLoaderPlugin = require('vue-loader/lib/plugin')
+const fs = require('fs');
+const path = require('path');
+const webpack = require('webpack');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
 
 module.exports = {
   mode: 'development',
 
   entry: fs.readdirSync(path.join(__dirname, 'examples')).reduce((entries, dir) => {
-    const fullDir = path.join(__dirname, 'examples', dir)
-    const entry = path.join(fullDir, 'app.js')
+    const fullDir = path.join(__dirname, 'examples', dir);
+    const entry = path.join(fullDir, 'app.js');
+    const outputEntries = entries;
     if (fs.statSync(fullDir).isDirectory() && fs.existsSync(entry)) {
-      entries[dir] = ['webpack-hot-middleware/client', entry]
+      outputEntries[dir] = ['webpack-hot-middleware/client', entry];
     }
 
-    return entries
+    return outputEntries;
   }, {}),
 
   output: {
     path: path.join(__dirname, '__build__'),
     filename: '[name].js',
     chunkFilename: '[id].chunk.js',
-    publicPath: '/__build__/'
+    publicPath: '/__build__/',
   },
 
   module: {
     rules: [
       { test: /\.vue$/, use: ['vue-loader'] },
-      { test: /\.css$/, use: ['vue-style-loader', 'css-loader'] }
-    ]
+      { test: /\.css$/, use: ['vue-style-loader', 'css-loader'] },
+    ],
   },
 
   optimization: {
@@ -36,16 +37,16 @@ module.exports = {
         vendors: {
           name: 'shared',
           filename: 'shared.js',
-          chunks: 'initial'
-        }
-      }
-    }
+          chunks: 'initial',
+        },
+      },
+    },
   },
 
   plugins: [
     new VueLoaderPlugin(),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin()
-  ]
+    new webpack.NoEmitOnErrorsPlugin(),
+  ],
 
-}
+};
